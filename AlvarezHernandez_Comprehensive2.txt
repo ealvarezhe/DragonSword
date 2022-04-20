@@ -1,0 +1,336 @@
+START
+	INITIALIZE SCANNER
+
+	DECLARE INT HP TO 5
+	DECLARE BOOLEAN SHIELDSTATUS
+	DECLARE BOOLEAN SWORDSTATUS
+	DECLARE INT SWORD
+	DECLARE INT SHIELD
+
+	DECLARE INT i
+	DECLARE INT e
+	DECLARE INT LASTROW
+	DECLARE INT LASTCOLUMN
+
+	DECLARE BOOLEAN DRAGONSTATUS
+	DECLARE INT DRAGON
+
+	MAIN METHOD
+		
+		DECLARE INT ARR [][]
+		SET ARR[2][3] TO SWORD  //Randomly placed from a given number from the lab
+		SET ARR [1][2] TO SHIELD //Randomly placed from a given number from the lab		
+		SET ARR [3][3] TO DRAGON //Randomly placed from a given number from the lab		
+
+		PRINT ("Oh no!")
+		PRINT("A dragon is killing our sheep and scaring our villagers, please help")
+		PRINT("the knight put a stop to this nightmare!")
+
+		CALL MOVING(ARR)				
+
+	END METHOD
+
+	MOVING METHOD (int ARR[][])
+		DECLARE STRING OPTION
+		DO
+			WHILE(i >= 0 && i < ARR.length)
+				WHILE(e >= 0 && e < ARR[0].length)
+					IF(DRAGONSTATUS == FALSE || HP <= 0)
+						BREAK
+					END IF
+
+					PRINT ("You are in cell i , e")
+					SET LASTROW TO i
+					SET LASTCOLUMN TO e
+
+					PRINT ("Your remaining health point are: HP")
+					PRINT ("Shield acquired: SHIELDSTATUS")
+					PRINT ("Sword acquired: SWORDSTATUS")
+					PRINT ("Where would you like to move now?")
+					PRINT ("Use L to move left")
+					PRINT ("Use R to move right")
+					PRINT ("Use U to move up")
+					PRINT ("Use D to move down")
+					PRINT ("If you want to exit enter E")
+					
+					
+					PROMPT option
+					STORE option in OPTION
+					IF(OPTIONENTERED(OPTION))
+						IF(OPTION.EQUALSIGNORECASE(L))
+							e = e - 1
+							IF(e < 0 )
+								PRINT("Enter a option in range")
+								e = e + 1
+							END IF
+						END IF
+						ELSE IF(OPTION.EQUALSIGNORECASE(R))
+							e = e + 1
+							IF(e > ARR[0].length - 1 )
+								PRINT("Enter a option in range")
+								e = e - 1
+							END IF
+						END IF
+						ELSE IF(OPTION.EQUALSIGNORECASE(U))
+							i = i - 1
+							IF(i < 0 )
+								PRINT("Enter a option in range")
+								i = i + 1
+							END IF
+						END IF
+						ELSE IF(OPTION.EQUALSIGNORECASE(D))
+							i = i + 1
+							IF(i > ARR.length - 1)
+								PRINT("Enter a option in range")
+								i = i - 1
+							END IF
+						END IF
+						
+						ELSE IF(OPTION.EQUALSIGNORECASE(E))
+							BREAK
+						END IF
+
+						CALL ENTERAROOM (ARR)
+						PRINT()
+					END IF
+					ELSE
+						PRINT("Please enter a valid input")
+					END IF
+				END WHILE
+				BREAK
+			END WHILE
+			BREAK			
+		WHILE (DRAGON == TRUE || HP > 0 || !"e".EQUALSIGNORECASE(OPTION))
+	END METHOD	
+
+	
+	BOOLEAN OPTIONENTERED(STRING J)
+		IF(J.EQUALSIGNORECASE(L) || J.EQUALSIGNORECASE(R) || J.EQUALSIGNORECASE(U) || J.EQUALS IGNORECASE(D) || J.EQUALSIGNORECASE(E))
+			RETURN TRUE
+		END IF
+		ELSE
+			RETURN FALSE
+		END IF
+	END METHOD
+
+
+	ENTERAROOM METHOD (int arr[][])
+		IF(ARR[i][e] == 0)
+			PRINT("You have entered an empty room, looks like there's nothing to do here.")
+		END IF
+		ELSE IF(ARR[i][e] == SWORD || ARR[i][e] == SHIELD)
+			DECLARE STRING ITEM
+			
+			IF (ARR[i][e] == SWORD)
+				SET ITEM TO "Sword"
+				PRINT ("The mythical ITEM is located in this room!")
+				PRINT ("A monster is guarding it.")
+			
+				IF(CALL MONSTEROPTION (ITEM) == 1) 
+					SET SWORDSTATUS TO TRUE
+					SET Arr[i][e] TO 0 
+					RETURN
+				END IF
+				ELSE IF(CALL MOSNTEROPTION (ITEM) == 2)
+					SET i TO LASTROW
+					SET e TO LASTCOLUMN
+					RETURN	
+				END IF
+				ELSE IF(CALL MONSTEROPTION (ITEM) == 3)
+					RETURN
+				END IF
+
+			END IF
+			ELSE IF(ARR[i][e] == SHIELD)
+				SET ITEM TO "Shield"
+				PRINT ("The mythical ITEM is located in this room!")
+				PRINT ("A monster is guarding it.")
+				
+				IF(CALL MONSTEROPTION (ITEM) == 1) 
+					SET SHIELDSTATUS TO TRUE
+					SET Arr[i][e] TO 0
+					RETURN
+				END IF
+				ELSE IF(MONSTEROPTION (ITEM) == 2)
+					SET i TO LASTROW
+					SET e TO LASTCOLUMN
+					RETURN
+				END IF
+				ELSE IF(CALL MONSTEROPTION (ITEM) == 3)
+					RETURN
+				END IF
+
+			END IF
+				
+		END IF
+		
+		ELSE IF(ARR[i][e] == DRAGON)
+			PRINT ("The dragon is located in this room!")
+			IF(CALL DRAGONFOUND == 1)
+				SET DRAGONSTATUS TO FALSE
+				SET ARR[i][e] TO 0
+				RETURN
+			END IF
+			ELSE IF(DRAGONFOUND == 2)
+				SET i TO LASTROW
+				SET e TO LASTCOLUMN
+				RETURN
+			END IF
+			ELSE IF(DRAGONFOUND == 3)
+				RETURN
+			END IF	
+	END METHOD
+
+
+	INT MONSTEROPTION METHOD(String ITEM)
+		DECLARE STRING OPTION
+		DO 
+			PRINT ("What would you like to do:")
+			PRINT ("a) Do nothing")
+			PRINT ("b) Hit the enemy")
+			PRINT ("c) Run away")
+			PROMPT option in OPTION
+			STORE option in OPTION
+
+			IF(OPTIONENEMY(OPTION))		
+				IF(OPTION.EQUALSIGNORECASE(a))
+					PRINT("You have chosen to do nothing.")
+					PRINT("The monster hit you.")
+					SET HP TO HP - 1
+					PRINT("Your remaining health point are: HP")
+					IF(HP <= 0)
+						PRINT("The monster killed you")
+						PRINT("Game Over...")
+						RETURN 3
+					END IF	
+				END IF
+				ELSE IF(OPTION.EQUALSIGNORECASE(b))
+					PRINT("You have chosen to hit the monster.")
+					PRINT("The monster hit you.")
+					SET HP TO HP - 1
+					PRINT("Your remaining health points are: HP")
+					IF(HP <= 0)
+						PRINT("The monster killed you")
+						PRINT("Game over...")
+						RETURN 3
+					END IF
+					ELSE
+						PRINT("You have defeated the monster and acquired the ITEM!")
+						RETURN 1
+					END IF
+				END IF
+		
+				ELSE IF(OPTION.EQUALSIGNORECASE(c))
+					PRINT("You have chosen to run away.")
+					RETURN 2
+				END IF
+			END IF
+			ELSE
+				PRINT("Please enter a valid input")
+			END IF
+		WHILE(OPTION.EQUALSIGNORECASE(a) || OPTIONENEMY(OPTION) == FALSE)
+*		RETURN 0 //This Statement is supposed to not be reached
+	END METHOD
+
+
+	INT DRAGONFOUND METHOD
+		DECLARE STRING OPTION
+		DO
+			PRINT ("What would you like to do:")
+			PRINT ("a) Do nothing")
+			PRINT ("b) Hit the enemy")
+			PRINT ("c) Run away")
+			PROMPT option
+			STORE option in OPTION
+		
+			IF(OPTIONENEMY(OPTION))
+				IF(OPTION.EQUALS(a))
+					PRINT("You have chosen to do nothing.")
+					IF (SWORDSTATUS = FALSE || SHIELDSTATUS == FALSE)
+						IF (SWORDSTATUS == FALSE && SHIELDSTATUS == FALSE)
+							PRINT("You are missing the sword and shield.")
+						END IF
+						ELSE IF(SWORDSTATUS == FALSE && SHIELDSTATUS == TRUE)
+							PRINT("You are missing the sword.")
+						END IF
+						ELSE IF(SWORDSTATUS == TRUE && SHIELDSTATUS == FALSE)
+							PRINT("You are missing the shield.")
+						END IF
+						PRINT("The dragon killed you...")
+						SET HP TO 0
+						PRINT("Game over...")
+						RETURN 3
+					END IF
+					ELSE IF(SWORDSTATUS == TRUE && SHIELDSTATUS == TRUE)
+						PRINT("The dragon hit you")
+						SET HP TO HP - 2
+						PRINT("Your remaining health points are: HP)
+						IF (HP <= 0)
+							PRINT("The dragon killed you")
+							PRINT("Game over...")
+							RETURN 3
+						END IF
+					END IF 
+				END IF
+				ELSE IF(OPTION.EQUALS(b))
+					PRINT("You have chosen to hit the dragon.")
+					IF (SWORDSTATUS = FALSE || SHIELDSTATUS == FALSE)
+						IF (SWORDSTATUS == FALSE && SHIELDSTATUS == FALSE)
+							PRINT("You are missing the sword and shield.")
+						END IF
+						ELSE IF(SWORDSTATUS == FALSE && SHIELDSTATUS == TRUE)
+							PRINT("You are missing the sword.")
+						END IF
+						ELSE IF(SWORDSTATUS == TRUE && SHIELDSTATUS == FALSE)
+							PRINT("You are missing the shield.")
+						END IF
+						PRINT("The dragon killed you...")
+						SET HP TO 0
+						PRINT("Game over...")
+						RETURN 3
+					END IF
+					ELSE IF(SWORDSTATUS == TRUE && SHIELDSTATUS == TRUE)
+						SET HP TO HP - 2
+				
+						IF(HP <= 0)
+							PRINT("The dragon hit you.)
+							PRINT("Your reamining health points are: HP")
+							PRINT("You have defeated the dragon!")
+							PRINT("You have saved the village but died in the process")
+							PRINT("Game over...")
+							RETURN 1
+						END IF
+						ELSE
+							PRINT("The dragon hit you.")
+							PRINT("Your remaining health points are: HP")
+							PRINT("You have defeated the dragon!")
+							PRINT("Congratulations, you have survived this quest!")
+							PRINT("Game over...")
+							RETURN 1
+						END IF
+					END IF
+				END IF
+
+				ELSE IF(OPTION.EQUALS(c))
+					PRINT("You have chosen to run away.")
+					RETURN 2
+				END IF
+			END IF
+			ELSE
+				PRINT("Please enter a valid input")
+			END IF
+		WHILE(OPTION.EQUALSIGNORECASE(a) || OPTIONENEMY(OPTION) == FALSE)
+*		RETURN 0  //This Statement is supposed to not be reached
+	END METHOD
+
+	
+	BOOLEAN OPTIONENEMY(STRING J)
+		IF(J.EQUALSIGNORECASE(a) || J.EQUALSIGNORECASE(b) || J.EQUALSIGNORECASE(c))
+			RETURN TRUE
+		END IF
+		ELSE
+			RETURN FALSE
+		END IF
+	END METHOD				
+
+END
